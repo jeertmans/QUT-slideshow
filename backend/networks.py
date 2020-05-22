@@ -2,8 +2,8 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from collections import defaultdict
 import pickle
-from people import Person
-from pictures import Picture
+from backend.people import Person
+from backend.pictures import Picture
 from random import sample
 
 

@@ -1,5 +1,5 @@
 {
-    "opencv_imread": [
+    "opencv-imread": [
         ".bmp", ".dip", ".jpeg", ".jpg", ".jpe", ".jp2", ".png", ".pbm", ".pgm", ".sr", ".ras", ".tiff", ".tif"
     ],
 

@@ -2,3 +2,7 @@
 tests/
 
 .idea/
+
+backend/__pycache__/
+
+test_pictures.py

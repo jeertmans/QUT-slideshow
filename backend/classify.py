@@ -2,6 +2,7 @@ import os
 import face_recognition
 import cv2
 
+
 def split_faces(filepath):
     image = cv2.imread(filepath)
     rgb_image = image[:, :, ::-1]
