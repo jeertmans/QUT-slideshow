@@ -4,6 +4,7 @@ import json
 from PIL import Image as PILImage
 import numpy as np
 from backend.filesutility import FilesManager
+import warnings
 
 
 class UnsupportedImageFormatError(Exception):
@@ -27,7 +28,7 @@ class Picture:
 
     def __init__(self, filename):
         if not os.path.exists(filename):
-            raise FileNotFoundError(filename)
+            warnings.warn(f"{filename} does not exist!")
 
         self.filename = filename
 
@@ -76,14 +77,17 @@ class Image(np.ndarray):
         left = 0
         return top, right, bottom, left
 
+    def resize(self, fx=.25, fy=.25):
+        return cv2.resize(self, (0, 0), fx=fx, fy=fy).view(type(self))
+
 
 class ImageRGB(Image):
 
     def asBGR(self):
         return self[:, :, ::-1].view(ImageBGR)
 
-    def show(self):
-        self.asBGR().show()
+    def show(self, title='image'):
+        return self.asBGR().show(title)
 
     def write(self, filename):
         self.asBGR().write(filename)
@@ -98,11 +102,13 @@ class ImageBGR(Image):
     def asRGB(self):
         return self[:, :, ::-1].view(ImageRGB)
 
-    def show(self):
-        cv2.namedWindow('image', cv2.WINDOW_NORMAL)
-        cv2.imshow('image', self)
-        cv2.waitKey(0)
+    def show(self, title='image'):
+        cv2.namedWindow(title, cv2.WINDOW_NORMAL)
+        cv2.imshow(title, self)
+        key = cv2.waitKey(0)
         cv2.destroyAllWindows()
+
+        return key
 
     def write(self, filename):
         cv2.imwrite(filename, self)

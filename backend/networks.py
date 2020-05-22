@@ -4,6 +4,7 @@ from collections import defaultdict
 import pickle
 from backend.people import Person
 from backend.pictures import Picture
+from backend.filesutility import FilesManager
 from random import sample
 
 
@@ -16,7 +17,9 @@ class Network:
     @staticmethod
     def dummy(n_people, n_pictures, connectivity=0.15):
         network = Network()
-        with open('data/first_names.txt', 'r') as f:
+
+        first_names_filename = FilesManager.get_src_filename('first_names.txt')
+        with open(first_names_filename, 'r') as f:
             names = f.readlines()
             people = [Person(name.strip()) for name in sample(names, n_people)]
             pictures = [Picture(name.strip()) for name in sample(names, n_pictures)]
@@ -38,14 +41,26 @@ class Network:
         with open(filename, 'rb') as f:
             network = pickle.load(f)
 
-            # Import to set back the id counter to where it was !
+            # Important to set back the id counter to where it was !
             network.__reset__id__counter__()
 
             return network
 
+    @staticmethod
+    def loads(string):
+        network = pickle.loads(string)
+
+        # Important to set back the id counter to where it was !
+        network.__reset__id__counter__()
+
+        return network
+
     def save(self, filename):
         with open(filename, 'wb') as f:
             pickle.dump(self, f)
+
+    def saves(self):
+        return pickle.dumps(self)
 
     def __str__(self):
         return f'Network of {len(self.graph.nodes)} people linked by {len(self.pictures)} pictures'
@@ -59,9 +74,14 @@ class Network:
     def __eq__(self, other):
         return (self.graph.nodes == other.graph.nodes) and (self.pictures.keys() == other.pictures.keys())
 
+    def __len__(self):
+        return len(self.graph.nodes) * len(self.pictures)
+
     def __getattribute__(self, item):
         if item == 'people':
             return self.graph.nodes
+        elif item == 'shape':
+            return len(self.graph.nodes), len(self.pictures)
         else:
             return super(Network, self).__getattribute__(item)
 

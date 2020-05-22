@@ -1,29 +1,32 @@
-import os
 import face_recognition
-import cv2
+from sklearn.naive_bayes import MultinomialNB
+
+# https://scikit-learn.org/0.15/modules/scaling_strategies.html
 
 
-def split_faces(filepath):
-    image = cv2.imread(filepath)
-    rgb_image = image[:, :, ::-1]
-    face_locations = face_recognition.face_locations(rgb_image, number_of_times_to_upsample=1, model='cnn')
-    face_encodings = face_recognition.face_encodings(rgb_image, face_locations, num_jitters=1, model='large')
+class FaceClassifier:
 
-    sub_images = []
-    for top, right, bottom, left in face_locations:
-        sub_images.append(rgb_image[top:bottom, left:right, ::-1])
+    def __init__(self, classifier=MultinomialNB()):
+        self.classifier = classifier
 
-    return sub_images, face_encodings
+    def partial_fit(self, encodings, names):
+        self.classifier.partial_fit(encodings, names)
 
+    def fit(self, encodings, names):
+        self.classifier.partial_fit(encodings, names)
 
-dirpath = 'photos'
+    def predict(self, encoding):
+        return self.classifier.predict(encoding)
 
-for basename in os.listdir(dirpath):
-    filepath = os.path.join(dirpath, basename)
-    print('Processing', filepath)
-    sub_images, _ = split_faces(filepath)
-    print('Found %d different faces in it!' % len(sub_images))
+    @staticmethod
+    def split_faces(image_rgb):
+        #face_locations = face_recognition.face_locations(image_rgb, number_of_times_to_upsample=1, model='cnn')
+        #face_encodings = face_recognition.face_encodings(image_rgb, face_locations, num_jitters=1, model='large')
+        face_locations = face_recognition.face_locations(image_rgb)
+        face_encodings = face_recognition.face_encodings(image_rgb, face_locations)
 
-    for i, sub_image in enumerate(sub_images):
-        name = "test/" + os.path.splitext(basename)[0] + '_' + str(i) + '.jpg'
-        cv2.imwrite(name, sub_image)
+        sub_images = []
+        for top, right, bottom, left in face_locations:
+            sub_images.append(image_rgb[top:bottom, left:right, :])
+
+        return sub_images, face_encodings, face_locations
