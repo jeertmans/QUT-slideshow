@@ -1,0 +1,9 @@
+{
+    "opencv_imread": [
+        ".bmp", ".dip", ".jpeg", ".jpg", ".jpe", ".jp2", ".png", ".pbm", ".pgm", ".sr", ".ras", ".tiff", ".tif"
+    ],
+
+    "PIL-Image-open": [
+        ".bmp", ".dip", ".rle", "..."
+    ]
+}
